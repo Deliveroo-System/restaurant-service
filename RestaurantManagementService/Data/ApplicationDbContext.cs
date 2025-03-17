@@ -17,7 +17,10 @@ public partial class ApplicationDbContext : DbContext
     }
 
     public virtual DbSet<Menu> Menus { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<LogUser> LogUsers { get; set; }
 
+  
     public virtual DbSet<MenuItem> MenuItems { get; set; }
 
     public virtual DbSet<Restaurant> Restaurants { get; set; }
@@ -26,7 +29,7 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+  //  public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserRole> UserRoles { get; set; }
 
@@ -36,6 +39,7 @@ public partial class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<LogUser>().HasNoKey();
         modelBuilder.Entity<Menu>(entity =>
         {
             entity.HasKey(e => e.MenuId).HasName("PK__Menus__C99ED230098F2526");
