@@ -67,3 +67,4 @@ npm-debug.log
 .env.production
 RestaurantService/RestaurantService/appsettings.Development.json
 appsettings.json
+/appsettings.json
