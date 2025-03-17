@@ -18,26 +18,17 @@ namespace RestaurantManagementService.Services
             _configuration = configuration;
         }
 
-        public string GenerateToken(User user)
+        public string GenerateToken(LogUser logUser)
         {
-            // Load roles (eagerly load UserRoles if necessary)
-            var roles = user.UserRoles
-                .Where(ur => ur.Role != null)  // Ensure role is not null
-                .Select(ur => ur.Role.RoleName)  // Extract role names
-                .ToList();
-
-            if (roles.Count == 0)
-            {
-                throw new Exception("User has no role assigned");
-            }
+            // Create the roles list from LogUser
+            var roles = new List<string> { logUser.il_RoleName };
 
             // Create claims
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, user.Email),
-                // Add all roles to the claims
-                new Claim(ClaimTypes.Role, string.Join(",", roles))
-            };
+        new Claim(ClaimTypes.Name, logUser.lg_email),
+        new Claim(ClaimTypes.Role, string.Join(",", roles)) 
+    };
 
             // Key for signing the JWT token
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -55,5 +46,6 @@ namespace RestaurantManagementService.Services
             // Return the generated token as a string
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 }

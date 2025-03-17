@@ -16,11 +16,13 @@ namespace RestaurantManagementService.Controllers
         private readonly JwtService _jwtService;
         private readonly ApplicationDbContext _context;
         private readonly UserService _userService;
-        public AuthController(JwtService jwtService, ApplicationDbContext context, UserService userService)
+        public AuthController(JwtService jwtService, ApplicationDbContext context, UserService userService, IConfiguration configuration)
         {
             _jwtService = jwtService;
             _context = context;
             _userService = userService;
+            string connectionString = configuration.GetConnectionString("DefaultConnection");
+            _userService = new UserService(connectionString);
         }
 
         [HttpPost("register")]
@@ -32,7 +34,7 @@ namespace RestaurantManagementService.Controllers
             try
             {
                 // Assuming the roleId is passed as part of the registration data
-                int roleId = 1; // Example: Assign the "RestaurantOwner" role
+                int roleId = 2; // Example: Assign the "RestaurantOwner" role
                 await _userService.RegisterUserAsync(
                     registrationDto.FirstName,
                     registrationDto.LastName,
@@ -53,16 +55,18 @@ namespace RestaurantManagementService.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
-            var user = _context.Users
-                .FirstOrDefault(u => u.Email == loginDto.Username);
+            var logUser = _context.LogUsers
+        .FirstOrDefault(u => u.lg_email == loginDto.Email);
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
+            if (logUser == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, logUser.lg_password))
             {
                 return Unauthorized("Invalid credentials");
             }
 
-            var token = _jwtService.GenerateToken(user);
-            return Ok(new { Token = token });
+            var token = _jwtService.GenerateToken(logUser);
+            var role = logUser.il_RoleName;
+            return Ok(new { Token = token, Role = role });
         }
+
     }
 }

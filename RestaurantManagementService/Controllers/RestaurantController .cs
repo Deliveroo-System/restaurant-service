@@ -14,7 +14,7 @@ namespace RestaurantManagementService.Controllers
     {
         [Route("api/[controller]")]
         [ApiController]
-        [Authorize] // Requires authentication
+        [Authorize] 
         public class RestaurantController : ControllerBase
         {
             private readonly ApplicationDbContext _context;
