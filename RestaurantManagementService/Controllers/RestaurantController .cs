@@ -9,9 +9,11 @@ namespace RestaurantManagementService.Controllers
 {
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System.Security.Claims;
 
     namespace RestaurantManagementService.Controllers
     {
+
         [Route("api/[controller]")]
         [ApiController]
         [Authorize] 
@@ -103,53 +105,95 @@ namespace RestaurantManagementService.Controllers
             }
 
             [HttpPost("add-restaurant")]
-            [Authorize(Roles = "RestaurantOwner,Admin")] // Only allowed for RestaurantOwner and Admin
+            [Authorize(Roles = "RestaurantOwner")]
             public async Task<IActionResult> AddRestaurant([FromBody] RestaurantDto restaurantDto)
             {
-                var result = await _restaurantService.ManageRestaurantAsync(
-                    "Insert",
-                    null,
-                    restaurantDto.OwnerId,
-                    restaurantDto.CategoryId,
-                    restaurantDto.Name,
-                    restaurantDto.Description,
-                    restaurantDto.Address,
-                    restaurantDto.PhoneNumber,
-                    restaurantDto.Email,
-                    restaurantDto.OpeningTime,
-                    restaurantDto.ClosingTime,
-                    restaurantDto.IsApproved,
-                    restaurantDto.IsAvailable);  // Make sure this is passed
+                try
+                {
+                    // Extract userId and email from the token
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Access NameIdentifier claim
+                    var userEmail = User.FindFirstValue(ClaimTypes.Name); // Access Name claim
 
-                return Ok(result);
+                    if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userEmail))
+                    {
+                        return Unauthorized("User ID or Email is missing in the token.");
+                    }
+
+                    // Log the extracted values for debugging
+                    Console.WriteLine($"UserId: {userId}, Email: {userEmail}");
+
+                    // Pass the email from the token to the service method
+                    var result = await _restaurantService.ManageRestaurantAsync(
+                        "Insert",
+                        restaurantDto.RestruntId,
+                        int.Parse(userId), // Convert userId to int
+                        restaurantDto.CategoryId,
+                        restaurantDto.Name,
+                        restaurantDto.Description,
+                        restaurantDto.Address,
+                        restaurantDto.PhoneNumber,
+                        userEmail, // Use email from token
+                        restaurantDto.OpeningTime,
+                        restaurantDto.ClosingTime,
+                        restaurantDto.IsApproved,
+                        restaurantDto.IsAvailable
+                    );
+
+                    return Ok(result);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"An error occurred: {ex.Message}");
+                }
             }
-
             [HttpPut("update-restaurant/{restaurantId}")]
             [Authorize(Roles = "RestaurantOwner,Admin")]
             public async Task<IActionResult> UpdateRestaurant(int restaurantId, [FromBody] RestaurantDto restaurantDto)
             {
-                var result = await _restaurantService.ManageRestaurantAsync(
-                    "Update",
-                    restaurantId,
-                    restaurantDto.OwnerId,
-                    restaurantDto.CategoryId,
-                    restaurantDto.Name,
-                    restaurantDto.Description,
-                    restaurantDto.Address,
-                    restaurantDto.PhoneNumber,
-                    restaurantDto.Email,
-                    restaurantDto.OpeningTime,
-                    restaurantDto.ClosingTime,
-                    restaurantDto.IsApproved,
-                    restaurantDto.IsAvailable); 
+                try
+                {
+                    // Extract userId and email from the token
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Access NameIdentifier claim
+                    var userEmail = User.FindFirstValue(ClaimTypes.Name); // Access Name claim
 
-                return Ok(result);
+                    if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userEmail))
+                    {
+                        return Unauthorized("User ID or Email is missing in the token.");
+                    }
+                    // Set the restaurantId from the route and update other details
+                    restaurantDto.RestruntId = restaurantId;
+                    int.TryParse(userId.ToString(), out int id);
+                    // Call the service method to handle the update
+                    var result = await _restaurantService.ManageRestaurantAsync(
+                        "Update",
+                        restaurantId,
+                        id,
+                        restaurantDto.CategoryId,
+                        restaurantDto.Name,
+                        restaurantDto.Description,
+                        restaurantDto.Address,
+                        restaurantDto.PhoneNumber,
+                        userEmail, // Use email from token
+                        restaurantDto.OpeningTime,
+                        restaurantDto.ClosingTime,
+                        restaurantDto.IsApproved,
+                        restaurantDto.IsAvailable
+                    );
+
+                    return Ok(result);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"An error occurred: {ex.Message}");
+                }
             }
+
 
             [HttpDelete("delete-restaurant/{restaurantId}")]
             [Authorize(Roles = "RestaurantOwner,Admin")]
             public async Task<IActionResult> DeleteRestaurant(int restaurantId)
             {
+
                 var result = await _restaurantService.ManageRestaurantAsync(
                     "Delete",             
                     restaurantId,          
@@ -168,6 +212,38 @@ namespace RestaurantManagementService.Controllers
 
                 return Ok(result);
             }
+            [HttpGet("get-restaurants")]
+            [Authorize(Roles = "RestaurantOwner")]
+            public async Task<IActionResult> GetRestaurantsForOwner()
+            {
+                try
+                {
+                    // Extract userId and email from the token
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Access NameIdentifier claim
+                    var userEmail = User.FindFirstValue(ClaimTypes.Name); // Access Name claim
+
+                    if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userEmail))
+                    {
+                        return Unauthorized("User ID or Email is missing in the token.");
+                    }
+                    ;
+                    int id = int.TryParse(userId.ToString(),out int passid) ? passid : 0 ;
+                    // Get restaurants owned by the user using their email
+                    var restaurants = await _restaurantService.GetRestaurantsByOwnerEmailAsync(userEmail,id);
+
+                    if (restaurants == null || !restaurants.Any())
+                    {
+                        return NotFound("No restaurants found for this owner.");
+                    }
+
+                    return Ok(restaurants);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"An error occurred: {ex.Message}");
+                }
+            }
+
 
 
         }
