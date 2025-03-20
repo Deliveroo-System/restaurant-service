@@ -49,6 +49,7 @@ builder.Services.AddSingleton(new RestaurantService(builder.Configuration.GetCon
 
 // Register JwtService for JWT handling
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<IMenuService, MenuService>();
 
 var app = builder.Build();
 
