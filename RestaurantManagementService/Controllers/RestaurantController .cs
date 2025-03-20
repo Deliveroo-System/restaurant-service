@@ -146,37 +146,49 @@ namespace RestaurantManagementService.Controllers
                     return StatusCode(500, $"An error occurred: {ex.Message}");
                 }
             }
+            [HttpGet("get-restaurant-menu/{restaurantId}")]
+            [Authorize]
+            public async Task<IActionResult> GetRestaurantMenu(int restaurantId)
+            {
+               
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+                
+                return await _restaurantService.GetRestaurantMenusAsync(restaurantId, userId);
+            }
+
             [HttpPut("update-restaurant/{restaurantId}")]
             [Authorize(Roles = "RestaurantOwner,Admin")]
             public async Task<IActionResult> UpdateRestaurant(int restaurantId, [FromBody] RestaurantDto restaurantDto)
             {
                 try
                 {
-                    // Extract userId and email from the token
-                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Access NameIdentifier claim
-                    var userEmail = User.FindFirstValue(ClaimTypes.Name); // Access Name claim
+                    
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+                    var userEmail = User.FindFirstValue(ClaimTypes.Name); 
 
                     if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userEmail))
                     {
                         return Unauthorized("User ID or Email is missing in the token.");
                     }
-                    // Set the restaurantId from the route and update other details
+                   
                     restaurantDto.RestruntId = restaurantId;
+                    restaurantDto.Email = userEmail;
                     int.TryParse(userId.ToString(), out int id);
-                    // Call the service method to handle the update
+                    
                     var result = await _restaurantService.ManageRestaurantAsync(
                         "Update",
                         restaurantId,
                         id,
-                        restaurantDto.CategoryId,
+                        null,
                         restaurantDto.Name,
                         restaurantDto.Description,
                         restaurantDto.Address,
                         restaurantDto.PhoneNumber,
-                        userEmail, // Use email from token
+                        null, 
                         restaurantDto.OpeningTime,
                         restaurantDto.ClosingTime,
-                        restaurantDto.IsApproved,
+                       null,
                         restaurantDto.IsAvailable
                     );
 
@@ -193,11 +205,20 @@ namespace RestaurantManagementService.Controllers
             [Authorize(Roles = "RestaurantOwner,Admin")]
             public async Task<IActionResult> DeleteRestaurant(int restaurantId)
             {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userEmail = User.FindFirstValue(ClaimTypes.Name);
+
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userEmail))
+                {
+                    return Unauthorized("User ID or Email is missing in the token.");
+                }
+
+                int.TryParse(userId.ToString(), out int id);
 
                 var result = await _restaurantService.ManageRestaurantAsync(
                     "Delete",             
                     restaurantId,          
-                    0,                   
+                    id,                   
                     0,                      
                     null, 
                     null,
@@ -228,7 +249,7 @@ namespace RestaurantManagementService.Controllers
                     }
                     ;
                     int id = int.TryParse(userId.ToString(),out int passid) ? passid : 0 ;
-                    // Get restaurants owned by the user using their email
+                   
                     var restaurants = await _restaurantService.GetRestaurantsByOwnerEmailAsync(userEmail,id);
 
                     if (restaurants == null || !restaurants.Any())

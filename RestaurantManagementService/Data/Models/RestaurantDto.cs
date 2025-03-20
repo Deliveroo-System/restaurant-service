@@ -11,7 +11,7 @@ namespace RestaurantManagementService.Controllers
         public string Description { get; set; }  // Nullable Description
         public string Address { get; set; }  // Nullable Address
         public string PhoneNumber { get; set; }  // Nullable PhoneNumber
-        public string Email { get; set; }
+        public string? Email { get; set; }
         public TimeSpan? OpeningTime { get; set; }  // Nullable
         public TimeSpan? ClosingTime { get; set; }  // Nullable
         public bool? IsApproved { get; set; }  // Nullable boolean
