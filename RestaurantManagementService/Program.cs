@@ -42,6 +42,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMenuItemService, MenuItemService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") 
+                  .AllowAnyMethod()  
+                  .AllowAnyHeader()  
+                  .AllowCredentials(); // Allow cookies/authentication
+        });
+});
+
 var context = new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>()
     .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
     .Options);
@@ -66,8 +78,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseAuthentication();  // Add authentication middleware
+app.UseCors("AllowFrontend"); // Enable CORS for frontend
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 
