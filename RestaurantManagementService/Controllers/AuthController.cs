@@ -24,7 +24,6 @@ namespace RestaurantManagementService.Controllers
             string connectionString = configuration.GetConnectionString("DefaultConnection");
             _userService = new UserService(connectionString, _context);
         }
-
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto registrationDto)
         {
@@ -33,9 +32,8 @@ namespace RestaurantManagementService.Controllers
 
             try
             {
-                
+                // Register the user
                 await _userService.RegisterUserAsync(
-                    
                     registrationDto.FirstName,
                     registrationDto.LastName,
                     registrationDto.Email,
@@ -44,13 +42,27 @@ namespace RestaurantManagementService.Controllers
                     registrationDto.id
                 );
 
-                return Ok("User registered successfully");
+                // Retrieve the newly created user
+                var registeredUser = await _userService.GetUserByEmailAsync(registrationDto.Email);
+
+                if (registeredUser == null)
+                {
+                    return BadRequest("User registration failed");
+                }
+
+                // Generate JWT token
+                var token = _jwtService.GenerateToken(registeredUser.RoleName, registeredUser.UserId, registeredUser.Email);
+                var role = registeredUser.RoleName;
+
+                // Return token and role
+                return Ok(new { Token = token, Role = role });
             }
             catch (Exception ex)
             {
                 return BadRequest($"Error registering user: {ex.Message}");
             }
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
@@ -66,9 +78,9 @@ namespace RestaurantManagementService.Controllers
             var token = _jwtService.GenerateToken(logUser.RoleName, logUser.UserId, logUser.Email);
           
             var role = logUser.RoleName;
-
+            var restaurantId = logUser.RestaurantId;
             // Return the token and role in the response
-            return Ok(new { Token = token, Role = role });
+            return Ok(new { Token = token, Role = role, RestaurantId = restaurantId});
         }
 
 
