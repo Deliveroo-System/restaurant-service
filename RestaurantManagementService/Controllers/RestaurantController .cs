@@ -16,7 +16,7 @@ namespace RestaurantManagementService.Controllers
 
         [Route("api/[controller]")]
         [ApiController]
-        [Authorize] 
+        
         public class RestaurantController : ControllerBase
         {
             private readonly ApplicationDbContext _context;
@@ -27,7 +27,19 @@ namespace RestaurantManagementService.Controllers
                 _restaurantService = restaurantService;
             }
 
-           
+            [HttpGet("get-restaurants/categories")]
+            public async Task<IActionResult> GetAllRestaurantscategories()
+            {
+                try
+                {
+                    var categories = await _restaurantService.GetAllRestaurantCategoriesAsync();
+                    return Ok(categories);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"An error occurred: {ex.Message}");
+                }
+            }
 
             [HttpPost("add-restaurant")]
             [Authorize(Roles = "RestaurantOwner")]
@@ -170,7 +182,7 @@ namespace RestaurantManagementService.Controllers
 
                     if (restaurants == null || !restaurants.Any())
                     {
-                        return NotFound("No restaurants found for this owner.");
+                        return NotFound("No restaurant found for this owner.");
                     }
 
                     return Ok(restaurants);
