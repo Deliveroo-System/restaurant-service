@@ -203,6 +203,13 @@ namespace RestaurantManagementService.Controllers
 
                 return await _restaurantService.GetRestaurantMenusAsync(restaurantId, userId);
             }
+            [HttpGet("get-all-restaurant-menuitems/")]
+            [Authorize]
+            public async Task<IActionResult> GetRestaurantMenuItems()
+            {
+
+                return await _restaurantService.GetRestaurantMenusItemsAsync();
+            }
 
         }
     }

@@ -31,7 +31,7 @@ namespace RestaurantManagementService.Services
                                 FROM Restaurants r
                                 INNER JOIN Users u ON r.OwnerId = u.UserId
                                 WHERE u.Email = @Email AND r.OwnerId = @OwnerId";
-            
+
             var parameters = new[]
             {
         new SqlParameter("@Email", email),
@@ -49,6 +49,20 @@ namespace RestaurantManagementService.Services
             // Query the RB_RESTAURANTS_MENUS view
             var menus = await _context.RB_RESTAURANTS_MENUS
                 .Where(rm => rm.RestaurantId == restaurantId && rm.OwnerId == userId)
+                .ToListAsync();
+
+            if (menus == null || !menus.Any())
+            {
+                return new NotFoundObjectResult("No menus found for this restaurant.");
+            }
+
+            return new OkObjectResult(menus);
+        }
+        public async Task<IActionResult> GetRestaurantMenusItemsAsync()
+        {
+            // Query the RB_RESTAURANTS_MENUS view
+            var menus = await _context.RB_RESTAURANTS_ITEMSMENUS
+               
                 .ToListAsync();
 
             if (menus == null || !menus.Any())
@@ -125,11 +139,11 @@ namespace RestaurantManagementService.Services
         public async Task<IEnumerable<RestaurantCategoryDto>> GetAllRestaurantCategoriesAsync()
         {
             string sqlQuery = @"
-        SELECT 
-            [CategoryId],
-            [CategoryName],
-            [Description]
-        FROM [restaurantDB].[dbo].[RestaurantCategories]";
+                                SELECT 
+                                    [CategoryId],
+                                    [CategoryName],
+                                    [Description]
+                                FROM [restaurantDB].[dbo].[RestaurantCategories]";
 
             var categories = await _context.RestaurantCategories
                 .FromSqlRaw(sqlQuery)
