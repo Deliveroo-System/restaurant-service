@@ -12,7 +12,7 @@ namespace RestaurantManagementService.Controllers
     {
         [ApiController]
         [Route("api/restaurant/menu/[controller]")]
-        [Authorize]
+       
         public class MenuItemsController : ControllerBase
         {
             private readonly IMenuItemService _menuItemService;
@@ -21,8 +21,19 @@ namespace RestaurantManagementService.Controllers
             {
                 _menuItemService = menuItemService;
             }
-
             // ✅ Get all menu items for a specific menu in a restaurant
+            [HttpGet("/")]
+            public async Task<IActionResult> GetAllMenuItems(int restaurantId, int menuId)
+            {
+                var result = await _menuItemService.GetMenuItemsAsync(restaurantId, menuId);
+
+                if (result == null || !result.Any())
+                    return NotFound("No menu items found.");
+
+                return Ok(result);
+            }
+            // ✅ Get all menu items for a specific menu in a restaurant
+            [Authorize]
             [HttpGet("{restaurantId}/menus/{menuId}/items")]
             public async Task<IActionResult> GetMenuItems(int restaurantId, int menuId)
             {
@@ -35,6 +46,7 @@ namespace RestaurantManagementService.Controllers
             }
 
             // ✅ Get a specific menu item by id
+            [Authorize]
             [HttpGet("{restaurantId}/menus/{menuId}/items/{menuItemId}")]
             public async Task<IActionResult> GetMenuItem(int restaurantId, int menuId, int menuItemId)
             {
