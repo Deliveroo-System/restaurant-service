@@ -20,6 +20,7 @@ jobs:
         with:
           repository: 'Deliveroo-System/ds-project-kubernetes'  # Update with the correct repository name
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main  # Explicitly specify the 'main' branch
           path: kubernetes  # The directory to clone the Kubernetes YAML files into
 
       # Step 3: Log in to Docker Hub
