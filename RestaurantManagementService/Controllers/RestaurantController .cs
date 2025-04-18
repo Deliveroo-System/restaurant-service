@@ -204,7 +204,7 @@ namespace RestaurantManagementService.Controllers
                 return await _restaurantService.GetRestaurantMenusAsync(restaurantId, userId);
             }
             [HttpGet("get-all-restaurant-menuitems/")]
-            [Authorize(Roles = "RestaurantOwner,Admin,Customer")]
+            [Authorize]
             public async Task<IActionResult> GetRestaurantMenuItems()
             {
 

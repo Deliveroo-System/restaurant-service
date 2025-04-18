@@ -27,41 +27,55 @@ namespace RestaurantManagementService.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto registrationDto)
         {
-            // Hash the password
-            var hashedPassword = new UserService().HashPassword(registrationDto.Password);
-
             try
             {
-                // Register the user
-                await _userService.RegisterUserAsync(
-                    registrationDto.FirstName,
-                    registrationDto.LastName,
-                    registrationDto.Email,
-                    registrationDto.PhoneNumber,
-                    hashedPassword,
-                    registrationDto.id
-                );
+                // Hash the password
+                var hashedPassword = new UserService().HashPassword(registrationDto.Password);
 
-                // Retrieve the newly created user
-                var registeredUser = await _userService.GetUserByEmailAsync(registrationDto.Email);
+                // Register the user
+                var registrationSuccess = await _userService.RegisterUserAsync(
+       registrationDto.FirstName,
+       registrationDto.LastName,
+       registrationDto.Email,
+       registrationDto.PhoneNumber,
+       hashedPassword,
+       registrationDto.id
+   );
+
+                if (!registrationSuccess)
+                {
+                    return BadRequest(new { error = "User registration failed. Please try again." });
+                }
+
+
+                // Retrieve the newly created user by email (case-insensitive)
+                var registeredUser = await _userService.GetUserByEmailAsync(registrationDto.Email.ToLower());
 
                 if (registeredUser == null)
                 {
-                    return BadRequest("User registration failed");
+                    return BadRequest(new { error = "User registration failed. User not found after creation." });
                 }
 
                 // Generate JWT token
-                var token = _jwtService.GenerateToken(registeredUser.RoleName, registeredUser.UserId, registeredUser.Email);
-                var role = registeredUser.RoleName;
+                var token = _jwtService.GenerateToken(
+                    registeredUser.RoleName,
+                    registeredUser.UserId,
+                    registeredUser.Email
+                );
 
                 // Return token and role
-                return Ok(new { Token = token, Role = role });
+                return Ok(new
+                {
+                    Token = token,
+                    Role = registeredUser.RoleName
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest($"Error registering user: {ex.Message}");
+                return BadRequest(new { error = $"Error registering user: {ex.Message}" });
             }
         }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
