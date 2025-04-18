@@ -1,4 +1,4 @@
-name: CI/CD for Restaurant Service
+name: CI for Restaurant Service
 
 on:
   push:
@@ -14,14 +14,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Clone the Kubernetes Config repository containing `restaurant-service.yaml`
+      # (Optional) Step 2: Clone Kubernetes Config Repository (can be removed if not needed)
       - name: Clone Kubernetes Config Repository
         uses: actions/checkout@v3
         with:
-          repository: 'Deliveroo-System/ds-project-kubernetes'  # Update with the correct repository name
+          repository: 'Deliveroo-System/ds-project-kubernetes'
           token: ${{ secrets.GITHUB_TOKEN }}
-          ref: main  # Explicitly specify the 'main' branch
-          path: kubernetes  # The directory to clone the Kubernetes YAML files into
+          ref: main
+          path: kubernetes
 
       # Step 3: Log in to Docker Hub
       - name: Log in to Docker Hub
@@ -34,20 +34,3 @@ jobs:
       # Step 5: Push the Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
         run: docker push vidura12/restaurant-service:latest
-
-      # Step 6: Set up kubectl to interact with the Kubernetes cluster
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-
-      # Step 7: Set the KUBECONFIG from the base64 encoded secret and configure it
-      - name: Set KUBECONFIG from base64 encoded secret
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > ~/.kube/config
-          chmod 600 ~/.kube/config
-
-      # Step 8: Apply the Kubernetes YAML to deploy the service to the cluster
-      - name: Deploy to Kubernetes
-        run: kubectl apply -f kubernetes/restaurant-service.yaml
