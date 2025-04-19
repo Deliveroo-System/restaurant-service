@@ -51,7 +51,7 @@ jobs:
           chmod 600 ~/.kube/config
           kubectl cluster-info
 
-      # Step 8: Deploy to Kubernetes
+      # Step 8: Deploy to Kubernetess
       - name: Deploy to Kubernetes
         run: |
           # Update image in deployment (optional - ensures latest image is used)
