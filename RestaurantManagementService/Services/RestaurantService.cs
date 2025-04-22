@@ -48,7 +48,7 @@ namespace RestaurantManagementService.Services
         {
             // Query the RB_RESTAURANTS_MENUS view
             var menus = await _context.RB_RESTAURANTS_MENUS
-                .Where(rm => rm.RestaurantId == restaurantId && rm.OwnerId == userId)
+                .Where(rm => rm.RestaurantId == restaurantId )
                 .ToListAsync();
 
             if (menus == null || !menus.Any())
@@ -62,7 +62,7 @@ namespace RestaurantManagementService.Services
         {
             // Query the RB_RESTAURANTS_MENUS view
             var menus = await _context.RB_RESTAURANTS_ITEMSMENUS
-               
+
                 .ToListAsync();
 
             if (menus == null || !menus.Any())
@@ -85,7 +85,8 @@ namespace RestaurantManagementService.Services
             TimeSpan? openingTime,
             TimeSpan? closingTime,
             bool? isApproved,
-            bool? isAvailable)
+            bool? isAvailable,
+            string ImageUrl)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -158,5 +159,23 @@ namespace RestaurantManagementService.Services
             return categories;
         }
 
+
+        public async Task<IEnumerable<Restaurant>> GetRestaurantsasync()
+        {
+
+            string sqlQuery = @"
+                                SELECT r.*
+                                FROM Restaurants r
+                                INNER JOIN Users u ON r.OwnerId = u.UserId
+                                ";
+
+
+
+            var restaurants = await _context.Restaurants
+                .FromSqlRaw(sqlQuery)
+                .ToListAsync();
+
+            return restaurants;
+        }
     }
 }

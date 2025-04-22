@@ -60,7 +60,7 @@ namespace RestaurantManagementService.Controllers
 
             // ✅ Add a menu item
             [HttpPost("{restaurantId}/menus/{menuId}/items")]
-            [Authorize(Roles = "RestaurantOwner")]
+            [Authorize]
             public async Task<IActionResult> AddMenuItem(int restaurantId, int menuId, [FromBody] MenuItemDto menuItemDto)
             {
                 if (!ModelState.IsValid)
@@ -82,7 +82,7 @@ namespace RestaurantManagementService.Controllers
 
             // ✅ Update a menu item
             [HttpPut("{restaurantId}/menus/{menuId}/items/{menuItemId}")]
-            [Authorize(Roles = "RestaurantOwner")]
+            [Authorize]
             public async Task<IActionResult> UpdateMenuItem(int restaurantId, int menuId, int menuItemId, [FromBody] MenuItemDto menuItemDto)
             {
                 if (!ModelState.IsValid)
@@ -104,7 +104,7 @@ namespace RestaurantManagementService.Controllers
 
             // ✅ Delete a menu item
             [HttpDelete("{restaurantId}/menus/{menuId}/items/{menuItemId}")]
-            [Authorize(Roles = "RestaurantOwner")]
+            [Authorize]
             public async Task<IActionResult> DeleteMenuItem(int restaurantId, int menuId, int menuItemId)
             {
                     var result = await _menuItemService.ManageMenuItemAsync(

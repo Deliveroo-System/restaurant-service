@@ -13,7 +13,7 @@ namespace RestaurantManagementService.Services
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public async Task<string> ManageMenuAsync(string action, int? menuId, int restaurantId, string menuName, string description, bool isActive)
+        public async Task<string> ManageMenuAsync(string action, int? menuId, int restaurantId, string menuName, string description, bool isActive, bool IsApproved)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -29,7 +29,7 @@ namespace RestaurantManagementService.Services
                     command.Parameters.AddWithValue("@MenuName", string.IsNullOrWhiteSpace(menuName) ? (object)DBNull.Value : menuName.Trim());
                     command.Parameters.AddWithValue("@Description", string.IsNullOrWhiteSpace(description) ? (object)DBNull.Value : description.Trim());
                     command.Parameters.AddWithValue("@IsActive", isActive);
-
+                    command.Parameters.AddWithValue("@IsApproved", isActive);
                     try
                     {
                         var result = await command.ExecuteNonQueryAsync();
