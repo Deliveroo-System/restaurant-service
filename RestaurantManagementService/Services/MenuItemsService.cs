@@ -15,7 +15,7 @@ namespace RestaurantManagementService.Services
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        // ✅ Get All Menu Items
+        // ✅ Get All Menu Itemss
         public async Task<IEnumerable<MenuItemDto>> GetMenuItemsAsync(int restaurantId, int menuId)
         {
             var menuItems = new List<MenuItemDto>();
