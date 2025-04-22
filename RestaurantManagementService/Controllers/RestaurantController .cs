@@ -117,7 +117,7 @@ namespace RestaurantManagementService.Controllers
                         null, 
                         restaurantDto.OpeningTime,
                         restaurantDto.ClosingTime,
-                       null,
+                       restaurantDto.IsApproved,
                         restaurantDto.IsAvailable,
                         restaurantDto.ImageUrl
                     );

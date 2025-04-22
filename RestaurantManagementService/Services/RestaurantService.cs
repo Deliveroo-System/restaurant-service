@@ -48,7 +48,7 @@ namespace RestaurantManagementService.Services
         {
             // Query the RB_RESTAURANTS_MENUS view
             var menus = await _context.RB_RESTAURANTS_MENUS
-                .Where(rm => rm.RestaurantId == restaurantId )
+                .Where(rm => rm.RestaurantId == restaurantId)
                 .ToListAsync();
 
             if (menus == null || !menus.Any())
@@ -161,13 +161,59 @@ namespace RestaurantManagementService.Services
         }
 
 
-        public async Task<IEnumerable<Restaurant>> GetRestaurantsasync()
+        public async Task<List<Restaurant>> GetRestaurantsasync()
         {
+            var restaurants = new List<Restaurant>();
 
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
 
-            var restaurants = await _context.Restaurants
-               
-                .ToListAsync();
+                const string query = @"
+                SELECT 
+                    RestaurantId,
+                    OwnerId,
+                    CategoryId,
+                    Name,
+                    Description,
+                    Address,
+                    ImageUrl,
+                    PhoneNumber,
+                    Email,
+                    OpeningTime,
+                    ClosingTime,
+                    IsApproved,
+                    IsAvailable,
+                    CreatedAt,
+                    UpdatedAt
+                FROM Restaurants";
+
+                using (var command = new SqlCommand(query, connection))
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        restaurants.Add(new Restaurant
+                        {
+                            RestaurantId = reader.GetInt32(0),
+                            OwnerId = reader.GetInt32(1),
+                            CategoryId = reader.GetInt32(2),
+                            Name = reader.GetString(3),
+                            Description = reader.IsDBNull(4) ? null : reader.GetString(4),
+                            Address = reader.IsDBNull(5) ? null : reader.GetString(5),
+                            ImageUrl = reader.IsDBNull(6) ? null : reader.GetString(6),
+                            PhoneNumber = reader.IsDBNull(7) ? null : reader.GetString(7),
+                            Email = reader.IsDBNull(8) ? null : reader.GetString(8),
+                            OpeningTime = (TimeOnly)(reader.IsDBNull(9) ? (TimeOnly?)null : TimeOnly.FromTimeSpan(reader.GetTimeSpan(9))),
+                            ClosingTime = (TimeOnly)(reader.IsDBNull(10) ? (TimeOnly?)null : TimeOnly.FromTimeSpan(reader.GetTimeSpan(10))),
+                            IsApproved = reader.GetBoolean(11),
+                            IsAvailable = reader.GetBoolean(12),
+                            CreatedAt = reader.GetDateTime(13),
+                            UpdatedAt = reader.IsDBNull(14) ? (DateTime?)null : reader.GetDateTime(14)
+                        });
+                    }
+                }
+            }
 
             return restaurants;
         }
