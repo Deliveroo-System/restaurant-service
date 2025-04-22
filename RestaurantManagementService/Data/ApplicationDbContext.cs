@@ -93,6 +93,7 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.IsAvailable).HasDefaultValue(true);
             entity.Property(e => e.Name).HasMaxLength(150);
+            entity.Property(e => e.ImageUrl).HasMaxLength(150);
             entity.Property(e => e.PhoneNumber).HasMaxLength(20);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 

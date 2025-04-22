@@ -116,6 +116,7 @@ namespace RestaurantManagementService.Services
                     // Boolean fields (Only update if provided)
                     command.Parameters.AddWithValue("@IsApproved", isApproved.HasValue ? (object)isApproved.Value : DBNull.Value);
                     command.Parameters.AddWithValue("@IsAvailable", isAvailable.HasValue ? (object)isAvailable.Value : DBNull.Value);
+                    command.Parameters.AddWithValue("@ImageUrl", string.IsNullOrWhiteSpace(ImageUrl) ? (object)DBNull.Value : ImageUrl.Trim());
 
                     try
                     {
@@ -163,16 +164,9 @@ namespace RestaurantManagementService.Services
         public async Task<IEnumerable<Restaurant>> GetRestaurantsasync()
         {
 
-            string sqlQuery = @"
-                                SELECT r.*
-                                FROM Restaurants r
-                                INNER JOIN Users u ON r.OwnerId = u.UserId
-                                ";
-
-
 
             var restaurants = await _context.Restaurants
-                .FromSqlRaw(sqlQuery)
+               
                 .ToListAsync();
 
             return restaurants;
