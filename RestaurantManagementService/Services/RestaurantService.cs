@@ -48,7 +48,7 @@ namespace RestaurantManagementService.Services
         {
             // Query the RB_RESTAURANTS_MENUS view
             var menus = await _context.RB_RESTAURANTS_MENUS
-                .Where(rm => rm.RestaurantId == restaurantId && rm.OwnerId == userId)
+                .Where(rm => rm.RestaurantId == restaurantId )
                 .ToListAsync();
 
             if (menus == null || !menus.Any())
@@ -62,7 +62,7 @@ namespace RestaurantManagementService.Services
         {
             // Query the RB_RESTAURANTS_MENUS view
             var menus = await _context.RB_RESTAURANTS_ITEMSMENUS
-               
+
                 .ToListAsync();
 
             if (menus == null || !menus.Any())
@@ -85,7 +85,8 @@ namespace RestaurantManagementService.Services
             TimeSpan? openingTime,
             TimeSpan? closingTime,
             bool? isApproved,
-            bool? isAvailable)
+            bool? isAvailable,
+            string ImageUrl)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -115,6 +116,7 @@ namespace RestaurantManagementService.Services
                     // Boolean fields (Only update if provided)
                     command.Parameters.AddWithValue("@IsApproved", isApproved.HasValue ? (object)isApproved.Value : DBNull.Value);
                     command.Parameters.AddWithValue("@IsAvailable", isAvailable.HasValue ? (object)isAvailable.Value : DBNull.Value);
+                    command.Parameters.AddWithValue("@ImageUrl", string.IsNullOrWhiteSpace(ImageUrl) ? (object)DBNull.Value : ImageUrl.Trim());
 
                     try
                     {
@@ -158,5 +160,16 @@ namespace RestaurantManagementService.Services
             return categories;
         }
 
+
+        public async Task<IEnumerable<Restaurant>> GetRestaurantsasync()
+        {
+
+
+            var restaurants = await _context.Restaurants
+               
+                .ToListAsync();
+
+            return restaurants;
+        }
     }
 }

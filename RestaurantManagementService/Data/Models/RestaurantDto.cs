@@ -16,6 +16,7 @@ namespace RestaurantManagementService.Controllers
         public TimeSpan? ClosingTime { get; set; }  // Nullable
         public bool? IsApproved { get; set; }  // Nullable boolean
         public bool? IsAvailable { get; set; }  // Nullable boolean
+        public string ImageUrl { get; set; }
     }
 
 }
