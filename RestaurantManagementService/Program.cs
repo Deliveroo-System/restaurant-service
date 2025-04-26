@@ -64,9 +64,9 @@ builder.Services.AddScoped<IMenuService, MenuService>();
 
 var app = builder.Build();
 
-//app.Urls.Add("http://localhost:8080");
-//app.Urls.Add("https://localhost:44397");
-//app.Urls.Add("https://localhost:8443");
+app.Urls.Add("http://localhost:8080");
+app.Urls.Add("https://localhost:44397");
+app.Urls.Add("https://localhost:8443");
 
 
 // Configure the HTTP request pipeline.
