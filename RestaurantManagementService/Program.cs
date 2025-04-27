@@ -85,5 +85,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Force the application to listen on HTTP 8080 (not HTTPS)
-app.Run("http://0.0.0.0:8080"); // Bind to HTTP only
+app.Run("http://0.0.0.0:8080"); // Bind to HTTP onl
 
