@@ -19,19 +19,18 @@ builder.Services.AddControllers();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        
         // Configure token validation parameters
         options.TokenValidationParameters = new TokenValidationParameters
         {
-           ValidateIssuer = true, // Validate the issuer
-           ValidateAudience = true, // Validate the audience
+            ValidateIssuer = true, // Validate the issuer
+            ValidateAudience = true, // Validate the audience
             ValidateLifetime = true, // Validate the token expiration
             ValidateIssuerSigningKey = true, // Validate the signing key
-          ValidIssuer = builder.Configuration["Jwt:Issuer"], // Issuer from configuration
-           ValidAudience = builder.Configuration["Jwt:Audience"], // Audience from configuration
+            ValidIssuer = builder.Configuration["Jwt:Issuer"], // Issuer from configuration
+            ValidAudience = builder.Configuration["Jwt:Audience"], // Audience from configuration
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) ,// Signing key from configuration
-             RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role" // IMPORTANT!
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])), // Signing key from configuration
+            RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role" // IMPORTANT!
         };
     });
 
@@ -45,9 +44,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") 
-                  .AllowAnyMethod()  
-                  .AllowAnyHeader()  
+            policy.WithOrigins("http://localhost:5173")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
                   .AllowCredentials(); // Allow cookies/authentication
         });
 });
@@ -61,17 +60,15 @@ builder.Services.AddSingleton(new RestaurantService(builder.Configuration.GetCon
 // Register JwtService for JWT handling
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IMenuService, MenuService>();
+
+// REMOVE HTTPS Redirection (since we are not using HTTPS in the container)
 builder.Services.AddHttpsRedirection(options =>
 {
+    // No need to set a port, we will use HTTP only.
     options.HttpsPort = 0;
 });
 
 var app = builder.Build();
-
-//app.Urls.Add("http://localhost:8080");
-//app.Urls.Add("https://localhost:44397");
-//app.Urls.Add("https://localhost:8443");
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -85,7 +82,8 @@ app.UseCors("AllowFrontend"); // Enable CORS for frontend
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapControllers();
 
-app.Run();
+// Force the application to listen on HTTP 8080 (not HTTPS)
+app.Run("http://0.0.0.0:8080"); // Bind to HTTP only
+
