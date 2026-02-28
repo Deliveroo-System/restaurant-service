@@ -14,5 +14,6 @@
         public string MenuDescription { get; set; }     
         public bool IsApproved { get; set; }
         public bool IsAvailable { get; set; }
+        public bool MenuApproved { get; set; }
     }
 }
