@@ -19,11 +19,11 @@ namespace RestaurantManagementService.Services
             _configuration = configuration;
         }
 
-        public string GenerateToken( string RoleName, int userId, string Email)
+        public string GenerateToken(string RoleName, int userId, string Email)
         {
-         
 
-            
+
+
             if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(RoleName))
             {
                 throw new ArgumentNullException("Email or RoleName is null or empty");
@@ -34,7 +34,7 @@ namespace RestaurantManagementService.Services
             {
                 throw new ArgumentNullException(nameof(secretKey), "Jwt:SecretKey is missing in configuration.");
             }
-          //  throw new ArgumentNullException(Email + RoleName +userId);
+            //  throw new ArgumentNullException(Email + RoleName +userId);
             var claims = new[]
             {
         new Claim(ClaimTypes.NameIdentifier, userId.ToString().Trim()), // Add user ID as NameIdentifier claim
