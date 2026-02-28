@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RestaurantManagementService.Data;
 using RestaurantManagementService.Services;
-using System.Net;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -62,12 +61,12 @@ builder.Services.AddSingleton(new RestaurantService(builder.Configuration.GetCon
 // Register JwtService for JWT handling
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IMenuService, MenuService>();
-// Disable HTTPS
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.Listen(IPAddress.Any, 8080);  // Only HTTP
-});
+
 var app = builder.Build();
+
+//app.Urls.Add("http://localhost:8080");
+//app.Urls.Add("https://localhost:44397");
+//app.Urls.Add("https://localhost:8443");
 
 
 // Configure the HTTP request pipeline.
