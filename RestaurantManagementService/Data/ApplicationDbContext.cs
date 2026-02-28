@@ -21,6 +21,8 @@ public partial class ApplicationDbContext : DbContext
     public DbSet<LogUser> LogUsers { get; set; }
 
     public DbSet<RestaurantMenu> RB_RESTAURANTS_MENUS { get; set; }
+    public DbSet<RestaurantItemMenu> RB_RESTAURANTS_ITEMSMENUS { get; set; }
+
     public virtual DbSet<MenuItem> MenuItems { get; set; }
 
     public virtual DbSet<Restaurant> Restaurants { get; set; }
@@ -41,6 +43,7 @@ public partial class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<LogUser>().HasNoKey();
         modelBuilder.Entity<RestaurantMenu>().HasNoKey();
+        modelBuilder.Entity<RestaurantItemMenu>().HasNoKey();
         modelBuilder.Entity<Menu>(entity =>
         {
             entity.HasKey(e => e.MenuId).HasName("PK__Menus__C99ED230098F2526");
