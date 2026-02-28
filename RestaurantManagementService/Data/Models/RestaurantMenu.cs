@@ -12,8 +12,8 @@
         public string Address { get; set; }
         public string MenuName { get; set; }
         public string MenuDescription { get; set; }     
-        public bool IsApproved { get; set; }
-        public bool IsAvailable { get; set; }
         public bool MenuApproved { get; set; }
+        public bool IsActive { get; set; }
+        //public bool MenuApproved { get; set; }
     }
 }
