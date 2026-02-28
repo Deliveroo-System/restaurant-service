@@ -1,4 +1,4 @@
-name: CI/CD for Restaurant Service
+name: CI for Restaurant Service
 
 on:
   push:
@@ -7,54 +7,30 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # Fixed typo (was 'ubUntu')
+    runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the main repository
-      - name: Checkout main repository
+      # Step 1: Checkout the current repository (Restaurant service code)
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # (Optional) Step 2: Clone Kubernetes Config Repository (can be removed if not needed)
+      - name: Clone Kubernetes Config Repository
         uses: actions/checkout@v3
         with:
-          ref: main  # Explicitly checkout main branch
+          repository: 'Deliveroo-System/ds-project-kubernetes'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+          path: kubernetes
 
-      # Step 2: Log in to Docker Hub
+      # Step 3: Log in to Docker Hubb
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # Step 3: Build the Docker image
+      # Step 4: Build the Docker image
       - name: Build Docker image
         run: docker build -f RestaurantManagementService/Dockerfile -t vidura12/restaurant-service:latest RestaurantManagementService
 
-      # Step 4: Push the Docker image to Docker Hub
+      # Step 5: Push the Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
         run: docker push vidura12/restaurant-service:latest
-
-      # Step 5: Checkout Kubernetes configs from main branch
-      - name: Checkout Kubernetes configs
-        uses: actions/checkout@v3
-        with:
-          repository: Deliveroo-System/ds-project-kubernetes
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: kubernetes
-          ref: main  # Explicitly checkout main branch
-
-      # Step 6: Set up kubectl
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-
-      # Step 7: Configure Kubernetes cluster access
-      - name: Configure Kubernetes
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > ~/.kube/config
-          chmod 600 ~/.kube/config
-          kubectl cluster-info
-
-      # Step 8: Deploy to Kubernetess
-      - name: Deploy to Kubernetes
-        run: |
-          # Update image in deployment (optional - ensures latest image is used)
-          kubectl set image deployment/restaurant-service *=vidura12/restaurant-service:latest -n your-namespace
-          kubectl apply -f kubernetes/restaurant-service.yaml
-          kubectl rollout status deployment/restaurant-service -n your-namespace
