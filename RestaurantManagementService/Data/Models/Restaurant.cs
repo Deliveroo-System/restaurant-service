@@ -15,9 +15,9 @@ public partial class Restaurant
 
     public string? Description { get; set; }
 
-    public string Address { get; set; } = null!;
-
-    public string PhoneNumber { get; set; } = null!;
+    public string? Address { get; set; }
+    public string? ImageUrl { get; set; }
+    public string? PhoneNumber { get; set; }
 
     public string? Email { get; set; }
 

@@ -21,7 +21,7 @@ namespace RestaurantManagementService.Controllers
             {
                 _menuItemService = menuItemService;
             }
-            // ✅ Get all menu items for a specific menu in a restaurant
+            
             [HttpGet("/")]
             public async Task<IActionResult> GetAllMenuItems(int restaurantId, int menuId)
             {
@@ -32,7 +32,7 @@ namespace RestaurantManagementService.Controllers
 
                 return Ok(result);
             }
-            // ✅ Get all menu items for a specific menu in a restaurant
+            
             [Authorize]
             [HttpGet("{restaurantId}/menus/{menuId}/items")]
             public async Task<IActionResult> GetMenuItems(int restaurantId, int menuId)
@@ -74,7 +74,9 @@ namespace RestaurantManagementService.Controllers
                     menuItemDto.Description,
                     menuItemDto.Price,
                     menuItemDto.IsAvailable,
-                    menuItemDto.ImageUrl
+                    menuItemDto.ImageUrl,
+                    menuItemDto.IsApproved
+
                 );
 
                 return Ok(new { message = "Menu item added successfully.", data = result });
@@ -96,7 +98,8 @@ namespace RestaurantManagementService.Controllers
                     menuItemDto.Description,
                     menuItemDto.Price,
                     menuItemDto.IsAvailable,
-                    menuItemDto.ImageUrl
+                    menuItemDto.ImageUrl,
+                    menuItemDto.IsApproved
                 );
 
                 return Ok(new { message = "Menu item updated successfully.", data = result });
@@ -115,7 +118,8 @@ namespace RestaurantManagementService.Controllers
                          null,
                          0,          // Price
                          null,       // IsAvailable
-                         null        // ✅ Add the imageUrl argument, probably null for delete
+                         null,
+                         null// ✅ Add the imageUrl argument, probably null for delete
  );
 
 
