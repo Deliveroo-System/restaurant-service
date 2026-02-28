@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RestaurantManagementService.Data;
 using RestaurantManagementService.Data.Models;
@@ -35,13 +36,27 @@ namespace RestaurantManagementService.Services
             {
         new SqlParameter("@Email", email),
         new SqlParameter("@OwnerId", ownerId)
-    };
+             };
 
             var restaurants = await _context.Restaurants
                 .FromSqlRaw(sqlQuery, parameters)
                 .ToListAsync();
 
             return restaurants;
+        }
+        public async Task<IActionResult> GetRestaurantMenusAsync(int restaurantId, int userId)
+        {
+            // Query the RB_RESTAURANTS_MENUS view
+            var menus = await _context.RB_RESTAURANTS_MENUS
+                .Where(rm => rm.RestaurantId == restaurantId && rm.OwnerId == userId)
+                .ToListAsync();
+
+            if (menus == null || !menus.Any())
+            {
+                return new NotFoundObjectResult("No menus found for this restaurant.");
+            }
+
+            return new OkObjectResult(menus);
         }
         public async Task<string> ManageRestaurantAsync(
             string action,
@@ -52,7 +67,7 @@ namespace RestaurantManagementService.Services
             string description,
             string address,
             string phoneNumber,
-            string email,
+            string? email,
             TimeSpan? openingTime,
             TimeSpan? closingTime,
             bool? isApproved,
