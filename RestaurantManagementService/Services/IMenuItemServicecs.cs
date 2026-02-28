@@ -12,10 +12,12 @@ namespace RestaurantManagementService.Services
      int? menuItemId,
      int menuId,
      string name,
+     
      string description,
      decimal? price,
      bool? isAvailable,
-     string imageUrl); // This argument is required
+     string imageUrl,
+     bool? IsApproved); // This argument is required
 
     }
 

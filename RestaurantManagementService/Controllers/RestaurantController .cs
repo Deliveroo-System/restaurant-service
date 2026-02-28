@@ -215,7 +215,7 @@ namespace RestaurantManagementService.Controllers
             }
 
             [HttpGet("get-all-restaurants/")]
-            [Authorize]
+           
             public async Task<IActionResult> GetRestaurants()
             {
                 var restaurants = await _restaurantService.GetRestaurantsasync();
