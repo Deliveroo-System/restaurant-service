@@ -31,7 +31,7 @@ namespace RestaurantManagementService.Controllers
                 menuDto.MenuName,
                 menuDto.Description,
                 menuDto.IsActive,
-                menuDto.IsApproved
+                menuDto.menuApproved
             );
 
             return Ok(result);
@@ -51,7 +51,7 @@ namespace RestaurantManagementService.Controllers
                 menuDto.MenuName,
                 menuDto.Description,
                 menuDto.IsActive,
-                menuDto.IsApproved
+                menuDto.menuApproved
             );
 
             return Ok(result);
