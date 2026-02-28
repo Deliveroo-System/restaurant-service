@@ -27,82 +27,7 @@ namespace RestaurantManagementService.Controllers
                 _restaurantService = restaurantService;
             }
 
-            [HttpPost("add-menu-item")]
-            [Authorize(Roles = "RestaurantOwner,Admin")] // Only allowed for RestaurantOwner and Admin
-            public IActionResult AddMenuItem([FromBody] MenuItem menuItem)
-            {
-                if (menuItem == null)
-                {
-                    return BadRequest("Menu item is required.");
-                }
-
-                menuItem.CreatedAt = DateTime.UtcNow;
-                menuItem.UpdatedAt = DateTime.UtcNow;
-
-                _context.MenuItems.Add(menuItem);
-                _context.SaveChanges();
-
-                return Ok("Menu item added successfully.");
-            }
-
-            [HttpPut("update-menu-item/{id}")]
-            [Authorize(Roles = "RestaurantOwner,Admin")]
-            public IActionResult UpdateMenuItem(int id, [FromBody] MenuItem menuItem)
-            {
-                var existingMenuItem = _context.MenuItems.FirstOrDefault(x => x.MenuItemId == id);
-
-                if (existingMenuItem == null)
-                {
-                    return NotFound("Menu item not found.");
-                }
-
-                existingMenuItem.Name = menuItem.Name;
-                existingMenuItem.Description = menuItem.Description;
-                existingMenuItem.Price = menuItem.Price;
-                existingMenuItem.IsAvailable = menuItem.IsAvailable;
-                existingMenuItem.ImageUrl = menuItem.ImageUrl;
-                existingMenuItem.UpdatedAt = DateTime.UtcNow;
-
-                _context.SaveChanges();
-
-                return Ok("Menu item updated successfully.");
-            }
-
-            [HttpDelete("delete-menu-item/{id}")]
-            [Authorize(Roles = "RestaurantOwner,Admin")]
-            public IActionResult DeleteMenuItem(int id)
-            {
-                var menuItem = _context.MenuItems.FirstOrDefault(x => x.MenuItemId == id);
-
-                if (menuItem == null)
-                {
-                    return NotFound("Menu item not found.");
-                }
-
-                _context.MenuItems.Remove(menuItem);
-                _context.SaveChanges();
-
-                return Ok("Menu item deleted successfully.");
-            }
-
-            [HttpPut("set-restaurant-availability/{id}")]
-            [Authorize(Roles = "RestaurantOwner,Admin")]
-            public IActionResult SetRestaurantAvailability(int id, [FromBody] bool isAvailable)
-            {
-                var restaurant = _context.Restaurants.FirstOrDefault(x => x.RestaurantId == id);
-
-                if (restaurant == null)
-                {
-                    return NotFound("Restaurant not found.");
-                }
-
-                restaurant.IsAvailable = isAvailable;
-                restaurant.UpdatedAt = DateTime.UtcNow;
-
-                _context.SaveChanges();
-
-                return Ok($"Restaurant availability updated to {isAvailable}.");
-            }
+           
 
             [HttpPost("add-restaurant")]
             [Authorize(Roles = "RestaurantOwner")]
@@ -146,16 +71,7 @@ namespace RestaurantManagementService.Controllers
                     return StatusCode(500, $"An error occurred: {ex.Message}");
                 }
             }
-            [HttpGet("get-restaurant-menu/{restaurantId}")]
-            [Authorize]
-            public async Task<IActionResult> GetRestaurantMenu(int restaurantId)
-            {
-               
-                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
-                
-                return await _restaurantService.GetRestaurantMenusAsync(restaurantId, userId);
-            }
+          
 
             [HttpPut("update-restaurant/{restaurantId}")]
             [Authorize(Roles = "RestaurantOwner,Admin")]
@@ -234,7 +150,7 @@ namespace RestaurantManagementService.Controllers
                 return Ok(result);
             }
             [HttpGet("get-restaurants")]
-            [Authorize(Roles = "RestaurantOwner")]
+            [Authorize(Roles = "RestaurantOwner,Admin")]
             public async Task<IActionResult> GetRestaurantsForOwner()
             {
                 try
@@ -265,7 +181,16 @@ namespace RestaurantManagementService.Controllers
                 }
             }
 
+            [HttpGet("get-restaurant-menu/{restaurantId}")]
+            [Authorize]
+            public async Task<IActionResult> GetRestaurantMenu(int restaurantId)
+            {
 
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+
+                return await _restaurantService.GetRestaurantMenusAsync(restaurantId, userId);
+            }
 
         }
     }
