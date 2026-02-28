@@ -122,7 +122,27 @@ namespace RestaurantManagementService.Services
                 }
             }
         }
+        public async Task<IEnumerable<RestaurantCategoryDto>> GetAllRestaurantCategoriesAsync()
+        {
+            string sqlQuery = @"
+        SELECT 
+            [CategoryId],
+            [CategoryName],
+            [Description]
+        FROM [restaurantDB].[dbo].[RestaurantCategories]";
 
+            var categories = await _context.RestaurantCategories
+                .FromSqlRaw(sqlQuery)
+                .Select(c => new RestaurantCategoryDto
+                {
+                    CategoryId = c.CategoryId,
+                    CategoryName = c.CategoryName,
+                    Description = c.Description
+                })
+                .ToListAsync();
+
+            return categories;
+        }
 
     }
 }
