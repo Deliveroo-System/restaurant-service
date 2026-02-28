@@ -19,21 +19,19 @@ builder.Services.AddControllers();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        // Disable HTTPS metadata requirement only in development
-        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
-        options.SaveToken = true;
-
+        
         // Configure token validation parameters
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true, // Validate the issuer
-            ValidateAudience = true, // Validate the audience
+           ValidateIssuer = true, // Validate the issuer
+           ValidateAudience = true, // Validate the audience
             ValidateLifetime = true, // Validate the token expiration
             ValidateIssuerSigningKey = true, // Validate the signing key
-            ValidIssuer = builder.Configuration["Jwt:Issuer"], // Issuer from configuration
-            ValidAudience = builder.Configuration["Jwt:Audience"], // Audience from configuration
+          ValidIssuer = builder.Configuration["Jwt:Issuer"], // Issuer from configuration
+           ValidAudience = builder.Configuration["Jwt:Audience"], // Audience from configuration
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Signing key from configuration
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) ,// Signing key from configuration
+             RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role" // IMPORTANT!
         };
     });
 
