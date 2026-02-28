@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RestaurantManagementService.Data;
@@ -40,6 +40,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IMenuItemService, MenuItemService>();
 
 var context = new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>()
     .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
@@ -52,6 +53,11 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IMenuService, MenuService>();
 
 var app = builder.Build();
+
+//app.Urls.Add("http://localhost:8080");
+//app.Urls.Add("https://localhost:44397");
+//app.Urls.Add("https://localhost:8443");
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
