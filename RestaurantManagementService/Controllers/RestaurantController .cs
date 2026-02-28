@@ -42,7 +42,7 @@ namespace RestaurantManagementService.Controllers
             }
 
             [HttpPost("add-restaurant")]
-            [Authorize(Roles = "RestaurantOwner")]
+            [Authorize]
             public async Task<IActionResult> AddRestaurant([FromBody] RestaurantDto restaurantDto)
             {
                 try
@@ -73,7 +73,8 @@ namespace RestaurantManagementService.Controllers
                         restaurantDto.OpeningTime,
                         restaurantDto.ClosingTime,
                         restaurantDto.IsApproved,
-                        restaurantDto.IsAvailable
+                        restaurantDto.IsAvailable,
+                        restaurantDto.ImageUrl
                     );
 
                     return Ok(result);
@@ -86,7 +87,7 @@ namespace RestaurantManagementService.Controllers
           
 
             [HttpPut("update-restaurant/{restaurantId}")]
-            [Authorize(Roles = "RestaurantOwner,Admin")]
+            [Authorize]
             public async Task<IActionResult> UpdateRestaurant(int restaurantId, [FromBody] RestaurantDto restaurantDto)
             {
                 try
@@ -117,7 +118,8 @@ namespace RestaurantManagementService.Controllers
                         restaurantDto.OpeningTime,
                         restaurantDto.ClosingTime,
                        null,
-                        restaurantDto.IsAvailable
+                        restaurantDto.IsAvailable,
+                        restaurantDto.ImageUrl
                     );
 
                     return Ok(result);
@@ -130,7 +132,7 @@ namespace RestaurantManagementService.Controllers
 
 
             [HttpDelete("delete-restaurant/{restaurantId}")]
-            [Authorize(Roles = "RestaurantOwner,Admin")]
+            [Authorize]
             public async Task<IActionResult> DeleteRestaurant(int restaurantId)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -156,13 +158,14 @@ namespace RestaurantManagementService.Controllers
                     TimeSpan.Zero,      // Set default DateTime.MinValue if necessary
                     TimeSpan.Zero,      // Set default DateTime.MinValue if necessary
                     true,                   // Can be set based on logic or validation
-                    true                    // Can be set based on logic or validation
+                    true,
+                    null// Can be set based on logic or validation
                 );
 
                 return Ok(result);
             }
             [HttpGet("get-restaurants")]
-            [Authorize(Roles = "RestaurantOwner,Admin")]
+            [Authorize]
             public async Task<IActionResult> GetRestaurantsForOwner()
             {
                 try
@@ -209,6 +212,14 @@ namespace RestaurantManagementService.Controllers
             {
 
                 return await _restaurantService.GetRestaurantMenusItemsAsync();
+            }
+
+            [HttpGet("get-all-restaurants/")]
+            [Authorize]
+            public async Task<IActionResult> GetRestaurants()
+            {
+                var restaurants = await _restaurantService.GetRestaurantsasync();
+                return Ok(restaurants); // Wrap the result in an Ok() to return it as IActionResult
             }
 
         }
