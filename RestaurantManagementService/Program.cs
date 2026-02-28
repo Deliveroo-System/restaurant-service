@@ -2,14 +2,17 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RestaurantManagementService.Data;
-using System.Text;
 using RestaurantManagementService.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add UserService to DI container
+builder.Services.AddTransient<UserService>(); // Register UserService
 
 builder.Services.AddControllers();
 
@@ -29,11 +32,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddControllers();
+// Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Register RestaurantService (singleton since it's stateless)
 builder.Services.AddSingleton(new RestaurantService(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register JwtService for JWT handling
 builder.Services.AddScoped<JwtService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
