@@ -34,9 +34,7 @@ secrets.json
 local.settings.json
 
 # Ignore Docker files
-Dockerfile
-docker-compose.yml
-.dockerignore
+
 
 # Ignore logs and diagnostics
 logs/
