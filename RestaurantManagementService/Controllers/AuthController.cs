@@ -34,13 +34,13 @@ namespace RestaurantManagementService.Controllers
 
                 // Register the user
                 var registrationSuccess = await _userService.RegisterUserAsync(
-       registrationDto.FirstName,
-       registrationDto.LastName,
-       registrationDto.Email,
-       registrationDto.PhoneNumber,
-       hashedPassword,
-       registrationDto.id
-   );
+                                   registrationDto.FirstName,
+                                   registrationDto.LastName,
+                                   registrationDto.Email,
+                                   registrationDto.PhoneNumber,
+                                   hashedPassword,
+                                   registrationDto.id
+                               );
 
                 if (!registrationSuccess)
                 {
@@ -88,13 +88,13 @@ namespace RestaurantManagementService.Controllers
             {
                 return Unauthorized("Invalid credentials");
             }
-          
+
             var token = _jwtService.GenerateToken(logUser.RoleName, logUser.UserId, logUser.Email);
-          
+
             var role = logUser.RoleName;
             var restaurantId = logUser.RestaurantId;
             // Return the token and role in the response
-            return Ok(new { Token = token, Role = role, RestaurantId = restaurantId});
+            return Ok(new { Token = token, Role = role, RestaurantId = restaurantId });
         }
 
 
