@@ -38,7 +38,8 @@ public class UserService
 
         return user;
     }
-    public async Task RegisterUserAsync(string firstName, string lastName, string email, string phoneNumber, string passwordHash, int roleId)
+
+    public async Task<bool> RegisterUserAsync(string firstName, string lastName, string email, string phoneNumber, string passwordHash, int roleId)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
@@ -58,14 +59,16 @@ public class UserService
 
                 try
                 {
-                    await command.ExecuteNonQueryAsync(); // Execute the procedure
+                    await command.ExecuteNonQueryAsync();
+                    return true;
                 }
                 catch (Exception ex)
                 {
-                    // Handle exceptions
-                    throw new Exception("An error occurred while registering the user", ex);
+                    // Log the error if needed
+                    return false;
                 }
             }
         }
     }
+
 }

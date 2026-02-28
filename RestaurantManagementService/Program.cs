@@ -33,7 +33,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"], // Issuer from configuration
             ValidAudience = builder.Configuration["Jwt:Audience"], // Audience from configuration
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Signing key from configuration
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) ,// Signing key from configuration
+             RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role" // IMPORTANT!
         };
     });
 
