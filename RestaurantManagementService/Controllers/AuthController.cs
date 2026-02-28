@@ -22,7 +22,7 @@ namespace RestaurantManagementService.Controllers
             _context = context;
             _userService = userService;
             string connectionString = configuration.GetConnectionString("DefaultConnection");
-            _userService = new UserService(connectionString);
+            _userService = new UserService(connectionString, _context);
         }
 
         [HttpPost("register")]
@@ -33,15 +33,15 @@ namespace RestaurantManagementService.Controllers
 
             try
             {
-                // Assuming the roleId is passed as part of the registration data
-                int roleId = 2; // Example: Assign the "RestaurantOwner" role
+                
                 await _userService.RegisterUserAsync(
+                    
                     registrationDto.FirstName,
                     registrationDto.LastName,
                     registrationDto.Email,
                     registrationDto.PhoneNumber,
                     hashedPassword,
-                    roleId
+                    registrationDto.id
                 );
 
                 return Ok("User registered successfully");
@@ -51,22 +51,27 @@ namespace RestaurantManagementService.Controllers
                 return BadRequest($"Error registering user: {ex.Message}");
             }
         }
-
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var logUser = _context.LogUsers
-        .FirstOrDefault(u => u.lg_email == loginDto.Email);
+            // Use UserService to find the user by email using a SQL query
+            var logUser = await _userService.GetUserByEmailAsync(loginDto.Email);
 
-            if (logUser == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, logUser.lg_password))
+            // Check if the user exists and if the password matches
+            if (logUser == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, logUser.PasswordHash))
             {
                 return Unauthorized("Invalid credentials");
             }
+          
+            var token = _jwtService.GenerateToken(logUser.RoleName, logUser.UserId, logUser.Email);
+          
+            var role = logUser.RoleName;
 
-            var token = _jwtService.GenerateToken(logUser);
-            var role = logUser.il_RoleName;
+            // Return the token and role in the response
             return Ok(new { Token = token, Role = role });
         }
+
+
 
     }
 }

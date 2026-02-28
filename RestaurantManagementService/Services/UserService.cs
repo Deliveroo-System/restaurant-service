@@ -1,10 +1,14 @@
 ﻿using BCrypt.Net;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using RestaurantManagementService.Data;
+using RestaurantManagementService.Data.Models;
 using System.Data;
 
 
 public class UserService
 {
+    private readonly ApplicationDbContext _context;
     public string HashPassword(string password)
     {
         return BCrypt.Net.BCrypt.HashPassword(password);
@@ -15,15 +19,25 @@ public class UserService
     }
     private readonly string _connectionString;
 
-    public UserService(string connectionString)
+    public UserService(string connectionString, ApplicationDbContext context)
     {
         _connectionString = connectionString;
+        _context = context;
     }
 
     public UserService()
     {
     }
+    public async Task<LogUser?> GetUserByEmailAsync(string email)
+    {
+        var query = "SELECT * FROM LogUsers WHERE Email = @Email";
 
+        var user = await _context.LogUsers
+            .FromSqlRaw(query, new SqlParameter("@Email", email))
+            .FirstOrDefaultAsync();
+
+        return user;
+    }
     public async Task RegisterUserAsync(string firstName, string lastName, string email, string phoneNumber, string passwordHash, int roleId)
     {
         using (var connection = new SqlConnection(_connectionString))
