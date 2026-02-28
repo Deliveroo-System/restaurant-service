@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1 Checkout the current repository (Restaurant service code)
+      # Step 1: Checkout the current repository (Restaurant service code)
       - name: Checkout repository
         uses: actions/checkout@v3
 
