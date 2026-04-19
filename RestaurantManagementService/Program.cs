@@ -51,9 +51,22 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Swagger
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+var context = new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>()
+    .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+    .Options);
+// Register RestaurantService (singleton since it's stateless)
+builder.Services.AddSingleton(new RestaurantService(builder.Configuration.GetConnectionString("DefaultConnection"), context));
+
+// Register JwtService for JWT handling
+builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<IMenuService, MenuService>();
+builder.Services.AddScoped<UserService>();
+// REMOVE HTTPS Redirection (since we are not using HTTPS in the container)
+builder.Services.AddHttpsRedirection(options =>
+{
+    // No need to set a port, we will use HTTP only.
+    options.HttpsPort = 0;
+});
 
 var app = builder.Build();
 

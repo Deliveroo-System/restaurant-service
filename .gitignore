@@ -3,3 +3,5 @@
 ############################################################################
 
 /RestaurantManagementService/appsettings.json
+RestaurantManagementService/Data/ApplicationDbContext.cs
+RestaurantManagementService/Data/ApplicationDbContext.cs
