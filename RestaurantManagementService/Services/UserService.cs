@@ -9,25 +9,16 @@ using System.Data;
 public class UserService
 {
     private readonly ApplicationDbContext _context;
-    public string HashPassword(string password)
-    {
-        return BCrypt.Net.BCrypt.HashPassword(password);
-    }
-    public bool VerifyPassword(string password, string storedHash)
-    {
-        return BCrypt.Net.BCrypt.Verify(password, storedHash);
-    }
     private readonly string _connectionString;
 
-    public UserService(string connectionString, ApplicationDbContext context)
+    public UserService(IConfiguration configuration, ApplicationDbContext context)
     {
-        _connectionString = connectionString;
+        _connectionString = configuration.GetConnectionString("DefaultConnection");
         _context = context;
     }
 
-    public UserService()
-    {
-    }
+    public string HashPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);
+    public bool VerifyPassword(string password, string storedHash) => BCrypt.Net.BCrypt.Verify(password, storedHash);
     public async Task<LogUser?> GetUserByEmailAsync(string email)
     {
         var query = "SELECT * FROM LogUsers WHERE Email = @Email";
@@ -63,11 +54,15 @@ public class UserService
                     return true;
                 }
                 catch (Exception ex)
+
                 {
-                    // Log the error if needed
-                    return false;
+                    // Log this to the console so you can see it in Visual Studio's Output window
+                    Console.WriteLine("REGISTRATION ERROR: " + ex.Message);
+
+                    // Temporarily throw the error so it shows up in Swagger
+                    throw new Exception($"DB Error: {ex.Message}");
                 }
-            }
+                }
         }
     }
 

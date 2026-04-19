@@ -60,7 +60,7 @@ builder.Services.AddSingleton(new RestaurantService(builder.Configuration.GetCon
 // Register JwtService for JWT handling
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IMenuService, MenuService>();
-
+builder.Services.AddScoped<UserService>();
 // REMOVE HTTPS Redirection (since we are not using HTTPS in the container)
 builder.Services.AddHttpsRedirection(options =>
 {
@@ -84,6 +84,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Force the application to listen on HTTP 8080 (not HTTPS)
-app.Run("http://0.0.0.0:8080"); // Bind to HTTP onl
-
+app.Run();
