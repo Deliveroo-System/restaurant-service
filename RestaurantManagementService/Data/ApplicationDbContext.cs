@@ -36,7 +36,7 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=VIDURA\\SQLEXPRESS;Initial Catalog=RestaurantDB;Integrated Security=True;Trust Server Certificate=True");
+        => optionsBuilder.UseSqlServer("Data Source=farmdbserver.database.windows.net;Initial Catalog=RestaurantDB;Persist Security Info=True;User ID=adminuser;Password=CinnamonSync2026;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
