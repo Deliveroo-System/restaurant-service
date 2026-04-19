@@ -10,12 +10,10 @@ public partial class ApplicationDbContext : DbContext
     public ApplicationDbContext()
     {
     }
-
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
     }
-
     public virtual DbSet<Menu> Menus { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<LogUser> LogUsers { get; set; }
@@ -31,17 +29,19 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
-  //  public virtual DbSet<User> Users { get; set; }
-
     public virtual DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=restaurantDB.mssql.somee.com;User ID=it22125866;Password=u1nmcs8493;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
-
+        => optionsBuilder.UseSqlServer(
+                        "Server=VIDURA\\SQLEXPRESS;Database=RestaurantDB;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True;"
+                    );
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<LogUser>().HasNoKey();
+                modelBuilder.Entity<RestaurantItemMenu>()
+            .Property(p => p.MenuItemPrice)
+            .HasColumnType("decimal(10,2)");
         modelBuilder.Entity<RestaurantMenu>().HasNoKey();
         modelBuilder.Entity<RestaurantItemMenu>().HasNoKey();
         modelBuilder.Entity<Menu>(entity =>
